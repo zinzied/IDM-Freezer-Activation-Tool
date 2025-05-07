@@ -1,4 +1,4 @@
-@set ver=1.0
+@set ver=1.2
 @setlocal DisableDelayedExpansion
 @echo off
 
@@ -9,7 +9,7 @@
 ::   IDM Activation Script (By ZIED)
 ::
 ::   Homepages: https://github.com/zinzied
-::              
+::
 ::       Telegram: @zinzied
 ::
 ::============================================================================
@@ -108,8 +108,10 @@ if defined _args (
 for %%A in (%_args%) do (
 if /i "%%A"=="-el"  set _elev=1
 if /i "%%A"=="/res" set _reset=1
-if /i "%%A"=="/frz" set _freeze=1
-if /i "%%A"=="/act" set _activate=1
+if /i "%%A"=="/frz" goto :_freeze_idm
+if /i "%%A"=="/act" goto :_activate_idm
+if /i "%%A"=="/sts" goto :_check_status
+if /i "%%A"=="/upd" goto :_check_updates
 )
 )
 
@@ -286,7 +288,7 @@ goto done2
 
 set _sid=
 for /f "delims=" %%a in ('%psc% "([System.Security.Principal.NTAccount](Get-WmiObject -Class Win32_ComputerSystem).UserName).Translate([System.Security.Principal.SecurityIdentifier]).Value" %nul6%') do (set _sid=%%a)
- 
+
 reg query HKU\%_sid%\Software %nul% || (
 for /f "delims=" %%a in ('%psc% "$explorerProc = Get-Process -Name explorer | Where-Object {$_.SessionId -eq (Get-Process -Id $pid).SessionId} | Select-Object -First 1; $sid = (gwmi -Query ('Select * From Win32_Process Where ProcessID=' + $explorerProc.Id)).GetOwnerSid().Sid; $sid" %nul6%') do (set _sid=%%a)
 )
@@ -370,33 +372,192 @@ if not defined terminal mode 75, 28
 echo:
 echo:
 call :_color2 %_White% "             " %_Green% "Create By ZIED"
-echo:            ___________________________________________________ 
+echo:            ___________________________________________________
 echo:
 echo:               Telegram: @zinzied
 echo:               Github: https://github.com/zinzied
-echo:            ___________________________________________________ 
-echo:                                                               
-echo:               [1] Activate (Currently not working)
+echo:            ___________________________________________________
+echo:
+echo:               [1] Activate
 echo:               [2] Freeze Trial
 echo:               [3] Reset Activation / Trial
-echo:               _____________________________________________   
-echo:                                                               
+echo:               [6] Check IDM Status
+echo:               _____________________________________________
+echo:
 echo:               [4] Download IDM
 echo:               [5] Help
+echo:               [7] Check for Updates
 echo:               [0] Exit
 echo:            ___________________________________________________
-echo:         
-call :_color2 %_White% "             " %_Green% "Enter a menu option in the Keyboard [1,2,3,4,5,0]"
-choice /C:123450 /N
+echo:
+call :_color2 %_White% "             " %_Green% "Enter a menu option in the Keyboard [1,2,3,4,5,6,7,0]"
+choice /C:12345670 /N
 set _erl=%errorlevel%
 
-if %_erl%==6 exit /b
+if %_erl%==8 exit /b
+if %_erl%==7 goto :_check_updates
+if %_erl%==6 goto :_check_status
 if %_erl%==5 start https://github.com/zinzied/IDM-Freezer & goto MainMenu
 if %_erl%==4 start https://www.internetdownloadmanager.com/download.html & goto MainMenu
 if %_erl%==3 goto _reset
-if %_erl%==2 (set frz=1&goto :_activate)
-if %_erl%==1 (set frz=0&goto :_activate)
+if %_erl%==2 goto :_freeze_idm
+if %_erl%==1 goto :_activate_idm
 goto :MainMenu
+
+::========================================================================================================================================
+
+:_activate_idm
+
+cls
+echo:
+echo Initializing IDM Activation...
+echo:
+
+%psc% "$ErrorActionPreference = 'Stop'; [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12; $DownloadURL = 'https://raw.githubusercontent.com/lstprjct/IDM-Activation-Script/main/IAS.cmd'; $rand = Get-Random -Maximum 99999999; $isAdmin = [bool]([Security.Principal.WindowsIdentity]::GetCurrent().Groups -match 'S-1-5-32-544'); $FilePath = if ($isAdmin) { $env:SystemRoot + '\Temp\IAS_' + $rand + '.cmd' } else { $env:TEMP + '\IAS_' + $rand + '.cmd' }; try { $response = Invoke-WebRequest -Uri $DownloadURL -UseBasicParsing } catch { Write-Host 'Failed to download the activation script.'; exit 1 }; $ScriptArgs = '/act'; $prefix = '@REM ' + $rand + ' `r`n'; $content = $prefix + $response; Set-Content -Path $FilePath -Value $content; Start-Process $FilePath $ScriptArgs -Wait; $FilePaths = @($env:TEMP + '\IAS*.cmd', $env:SystemRoot + '\Temp\IAS*.cmd'); foreach ($Path in $FilePaths) { Get-Item $Path -ErrorAction SilentlyContinue | Remove-Item -ErrorAction SilentlyContinue }"
+
+if %errorlevel% NEQ 0 (
+    %eline%
+    echo Failed to download or run the IDM Activation Script.
+    echo:
+    echo Please check your internet connection and try again.
+    goto done
+)
+
+echo:
+echo %line%
+echo:
+call :_color %Green% "The IDM Activation process has been completed."
+echo:
+call :_color %Gray% "If the fake serial screen appears, use the Freeze Trial option instead."
+
+goto done
+
+::========================================================================================================================================
+
+:_check_updates
+
+cls
+if not defined terminal mode 113, 35
+if not defined terminal %psc% "&%_buf%" %nul%
+
+echo:
+echo Checking for updates...
+echo:
+
+set _int=
+for /f "delims=[] tokens=2" %%# in ('ping -n 1 github.com') do (if not [%%#]==[] set _int=1)
+
+if not defined _int (
+    call :_color %Red% "Unable to connect to GitHub. Please check your internet connection."
+    goto done
+)
+
+echo Current version: %ver%
+echo:
+
+%psc% "$ErrorActionPreference = 'Stop'; try { $response = Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/zinzied/IDM-Freezer/main/version.txt' -UseBasicParsing; $latestVersion = $response.Content.Trim(); Write-Output $latestVersion } catch { Write-Output 'Error' }" > "%temp%\idm_version.txt"
+
+set /p _latest_ver=<"%temp%\idm_version.txt"
+del /f /q "%temp%\idm_version.txt" %nul%
+
+if "%_latest_ver%"=="Error" (
+    call :_color %Red% "Failed to check for updates. Please try again later."
+    goto done
+)
+
+echo Latest version: %_latest_ver%
+echo:
+
+if "%ver%"=="%_latest_ver%" (
+    call :_color %Green% "You are running the latest version!"
+) else (
+    call :_color %Yellow% "A new version is available!"
+    echo:
+    echo Visit https://github.com/zinzied/IDM-Freezer to download the latest version.
+)
+
+echo %line%
+echo:
+call :_color %Green% "Update check completed."
+
+goto done
+
+:_check_status
+
+cls
+if not defined terminal mode 113, 35
+if not defined terminal %psc% "&%_buf%" %nul%
+
+echo:
+echo Checking IDM Status...
+echo:
+
+if not exist "%IDMan%" (
+    call :_color %Red% "IDM [Internet Download Manager] is not Installed."
+    echo You can download it from  https://www.internetdownloadmanager.com/download.html
+    goto done
+)
+
+echo IDM Installation Path: "%IDMan%"
+echo:
+
+for /f "tokens=2*" %%a in ('reg query "HKU\%_sid%\Software\DownloadManager" /v idmvers %nul6%') do (
+    echo IDM Version: %%b
+    echo:
+)
+
+for /f "tokens=2*" %%a in ('reg query "HKU\%_sid%\Software\DownloadManager" /v Serial %nul6%') do (
+    call :_color %Green% "IDM is registered with a serial key."
+    echo Serial: %%b
+    set _status=registered
+    echo:
+)
+
+if not defined _status (
+    for /f "tokens=2*" %%a in ('reg query "HKU\%_sid%\Software\DownloadManager" /v tvfrdt %nul6%') do (
+        call :_color %Yellow% "IDM is in trial mode."
+        echo Trial data: %%b
+        set _status=trial
+        echo:
+    )
+)
+
+if not defined _status (
+    call :_color %Red% "IDM status could not be determined."
+    echo:
+)
+
+echo %line%
+echo:
+call :_color %Green% "IDM Status Check Completed."
+
+goto done
+
+:_freeze_idm
+
+cls
+echo:
+echo Initializing IDM Trial Freeze...
+echo:
+
+%psc% "$ErrorActionPreference = 'Stop'; [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12; $DownloadURL = 'https://raw.githubusercontent.com/lstprjct/IDM-Activation-Script/main/IAS.cmd'; $rand = Get-Random -Maximum 99999999; $isAdmin = [bool]([Security.Principal.WindowsIdentity]::GetCurrent().Groups -match 'S-1-5-32-544'); $FilePath = if ($isAdmin) { $env:SystemRoot + '\Temp\IAS_' + $rand + '.cmd' } else { $env:TEMP + '\IAS_' + $rand + '.cmd' }; try { $response = Invoke-WebRequest -Uri $DownloadURL -UseBasicParsing } catch { Write-Host 'Failed to download the activation script.'; exit 1 }; $ScriptArgs = '/frz'; $prefix = '@REM ' + $rand + ' `r`n'; $content = $prefix + $response; Set-Content -Path $FilePath -Value $content; Start-Process $FilePath $ScriptArgs -Wait; $FilePaths = @($env:TEMP + '\IAS*.cmd', $env:SystemRoot + '\Temp\IAS*.cmd'); foreach ($Path in $FilePaths) { Get-Item $Path -ErrorAction SilentlyContinue | Remove-Item -ErrorAction SilentlyContinue }"
+
+if %errorlevel% NEQ 0 (
+    %eline%
+    echo Failed to download or run the IDM Activation Script.
+    echo:
+    echo Please check your internet connection and try again.
+    goto done
+)
+
+echo:
+echo %line%
+echo:
+call :_color %Green% "The IDM 30 days trial period is successfully freezed for Lifetime."
+echo:
+call :_color %Gray% "If IDM is showing a popup to register, reinstall IDM."
+
+goto done
 
 ::========================================================================================================================================
 
@@ -722,11 +883,11 @@ foreach ($regPath in $regPaths) {
     if (($regPath -match "HKEY_USERS") -and ($HKCUsync -ne $null)) {
         continue
     }
-	
+
 	Write-Host
 	Write-Host "Searching IDM CLSID Registry Keys in $regPath"
 	Write-Host
-	
+
     $subKeys = Get-ChildItem -Path $regPath -ErrorAction SilentlyContinue -ErrorVariable lockedKeys | Where-Object { $_.PSChildName -match '^\{[A-F0-9]{8}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{12}\}$' }
 
     foreach ($lockedKey in $lockedKeys) {
@@ -738,7 +899,7 @@ foreach ($regPath in $regPaths) {
     if ($subKeys -eq $null) {
 	continue
 	}
-	
+
 	$subKeysToExclude = "LocalServer32", "InProcServer32", "InProcHandler32"
 
     $filteredKeys = $subKeys | Where-Object { !($_.GetSubKeyNames() | Where-Object { $subKeysToExclude -contains $_ }) }
