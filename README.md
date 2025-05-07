@@ -8,7 +8,6 @@ An enhanced open-source tool to activate, freeze trial, and manage Internet Down
 - Improved Python GUI with colorful interface
 - Added IDM status checking feature
 - Added backup/restore functionality for IDM settings
-- Integrated IAS.ps1 and IAS.CMD for better activation
 - Added automatic update checking
 - Enhanced error handling and user feedback
 - Progress indicators for operations
