@@ -108,8 +108,8 @@ if defined _args (
 for %%A in (%_args%) do (
 if /i "%%A"=="-el"  set _elev=1
 if /i "%%A"=="/res" set _reset=1
-if /i "%%A"=="/frz" goto :_freeze_idm
-if /i "%%A"=="/act" goto :_activate_idm
+if /i "%%A"=="/frz" set _freeze=1
+if /i "%%A"=="/act" set _activate=1
 if /i "%%A"=="/sts" goto :_check_status
 if /i "%%A"=="/upd" goto :_check_updates
 )
@@ -400,37 +400,9 @@ if %_erl%==6 goto :_check_status
 if %_erl%==5 start https://github.com/zinzied/IDM-Freezer & goto MainMenu
 if %_erl%==4 start https://www.internetdownloadmanager.com/download.html & goto MainMenu
 if %_erl%==3 goto _reset
-if %_erl%==2 goto :_freeze_idm
-if %_erl%==1 goto :_activate_idm
+if %_erl%==2 (set frz=1&goto :_activate)
+if %_erl%==1 (set frz=0&goto :_activate)
 goto :MainMenu
-
-::========================================================================================================================================
-
-:_activate_idm
-
-cls
-echo:
-echo Initializing IDM Activation...
-echo:
-
-%psc% "$ErrorActionPreference = 'Stop'; [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12; $DownloadURL = 'https://raw.githubusercontent.com/lstprjct/IDM-Activation-Script/main/IAS.cmd'; $rand = Get-Random -Maximum 99999999; $isAdmin = [bool]([Security.Principal.WindowsIdentity]::GetCurrent().Groups -match 'S-1-5-32-544'); $FilePath = if ($isAdmin) { $env:SystemRoot + '\Temp\IAS_' + $rand + '.cmd' } else { $env:TEMP + '\IAS_' + $rand + '.cmd' }; try { $response = Invoke-WebRequest -Uri $DownloadURL -UseBasicParsing } catch { Write-Host 'Failed to download the activation script.'; exit 1 }; $ScriptArgs = '/act'; $prefix = '@REM ' + $rand + ' `r`n'; $content = $prefix + $response; Set-Content -Path $FilePath -Value $content; Start-Process $FilePath $ScriptArgs -Wait; $FilePaths = @($env:TEMP + '\IAS*.cmd', $env:SystemRoot + '\Temp\IAS*.cmd'); foreach ($Path in $FilePaths) { Get-Item $Path -ErrorAction SilentlyContinue | Remove-Item -ErrorAction SilentlyContinue }"
-
-if %errorlevel% NEQ 0 (
-    %eline%
-    echo Failed to download or run the IDM Activation Script.
-    echo:
-    echo Please check your internet connection and try again.
-    goto done
-)
-
-echo:
-echo %line%
-echo:
-call :_color %Green% "The IDM Activation process has been completed."
-echo:
-call :_color %Gray% "If the fake serial screen appears, use the Freeze Trial option instead."
-
-goto done
 
 ::========================================================================================================================================
 
@@ -528,44 +500,6 @@ if not defined _status (
 )
 
 echo %line%
-echo:
-call :_color %Green% "IDM Status Check Completed."
-
-goto done
-
-:_freeze_idm
-
-cls
-echo:
-echo Initializing IDM Trial Freeze...
-echo:
-
-%psc% "$ErrorActionPreference = 'Stop'; [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12; $DownloadURL = 'https://raw.githubusercontent.com/lstprjct/IDM-Activation-Script/main/IAS.cmd'; $rand = Get-Random -Maximum 99999999; $isAdmin = [bool]([Security.Principal.WindowsIdentity]::GetCurrent().Groups -match 'S-1-5-32-544'); $FilePath = if ($isAdmin) { $env:SystemRoot + '\Temp\IAS_' + $rand + '.cmd' } else { $env:TEMP + '\IAS_' + $rand + '.cmd' }; try { $response = Invoke-WebRequest -Uri $DownloadURL -UseBasicParsing } catch { Write-Host 'Failed to download the activation script.'; exit 1 }; $ScriptArgs = '/frz'; $prefix = '@REM ' + $rand + ' `r`n'; $content = $prefix + $response; Set-Content -Path $FilePath -Value $content; Start-Process $FilePath $ScriptArgs -Wait; $FilePaths = @($env:TEMP + '\IAS*.cmd', $env:SystemRoot + '\Temp\IAS*.cmd'); foreach ($Path in $FilePaths) { Get-Item $Path -ErrorAction SilentlyContinue | Remove-Item -ErrorAction SilentlyContinue }"
-
-if %errorlevel% NEQ 0 (
-    %eline%
-    echo Failed to download or run the IDM Activation Script.
-    echo:
-    echo Please check your internet connection and try again.
-    goto done
-)
-
-echo:
-echo %line%
-echo:
-call :_color %Green% "The IDM 30 days trial period is successfully freezed for Lifetime."
-echo:
-call :_color %Gray% "If IDM is showing a popup to register, reinstall IDM."
-
-goto done
-
-::========================================================================================================================================
-
-:_reset
-
-cls
-if not %HKCUsync%==1 (
-if not defined terminal mode 153, 35
 ) else (
 if not defined terminal mode 113, 35
 )
