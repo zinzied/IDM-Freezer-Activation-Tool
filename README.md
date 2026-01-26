@@ -1,9 +1,9 @@
-# IDM Freezer & Activation Tool v5.2.2
+# IDM Freezer & Activation Tool v5.2.3
 An enhanced open-source tool to activate, freeze trial, and manage Internet Download Manager
 
 <img width="959" height="486" alt="image" src="https://github.com/user-attachments/assets/f914f615-88cd-4170-803a-c867a97df9e0" />
 
-## What's New in Version 5.2.2
+## What's New in Version 5.2.3
 - **🚀 Smart Network Handling**: Downloads now work perfectly after activation (fixed port 443 issue)
 - **🛡️ Ultra Stealth Mode**: Enhanced protection against detection
 - **⚡ Improved Performance**: Faster and more reliable activation process
