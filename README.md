@@ -5,7 +5,7 @@ An enhanced open-source tool to activate, freeze trial, and manage Internet Down
 
 
 ## What's New in Version 5.2.4
-- **🛡️ Enhanced Anti-Detection**: Added new verification server IPs (`67.18.60.145`, `169.62.35.21`) to firewall blocks.
+- **🛡️ Enhanced Anti-Detection**: Added new verification server IPs (`67.xx.xx.xx`, `169.xx.xx.xx21`) to firewall blocks.
 - **🌐 Updated Hosts Block**: Included more recent domains used by IDM for verification checks.
 - **⚠️ Smart Recommendations**: The UI now warns against traditional activation and recommends the "Freeze Trial" method.
 - **🚀 Version Update**: All components synchronized to v5.2.4 for consistent behavior.
@@ -28,7 +28,7 @@ An enhanced open-source tool to activate, freeze trial, and manage Internet Down
 
 ### Running the Application
 
-1. Download `IDM Manager v5.2.4.x64.exe` (or run `IDM Manager v5.2.4.py`)
+1. Download `IDM Manager v5.2.4.x64.exe`
 2. Right-click → **Run as administrator**
 3. Select your desired option from the menu
 
