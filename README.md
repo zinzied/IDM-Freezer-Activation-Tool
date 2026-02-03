@@ -1,14 +1,14 @@
-# IDM Freezer & Activation Tool v5.2.3
+# IDM Freezer & Activation Tool v5.2.4
 An enhanced open-source tool to activate, freeze trial, and manage Internet Download Manager
 
-<img width="959" height="486" alt="image" src="https://github.com/user-attachments/assets/f914f615-88cd-4170-803a-c867a97df9e0" />
+![Capture](https://github.com/user-attachments/assets/fdaf3422-b3c5-4b72-82d8-6ab18ae7abfe)
 
-## What's New in Version 5.2.3
-- **🚀 Smart Network Handling**: Downloads now work perfectly after activation (fixed port 443 issue)
-- **🛡️ Ultra Stealth Mode**: Enhanced protection against detection
-- **⚡ Improved Performance**: Faster and more reliable activation process
-- **🔧 Bug Fixes**: Resolved download blocking issues from previous versions
-- **📝 Better Logging**: Enhanced operation tracking
+
+## What's New in Version 5.2.4
+- **🛡️ Enhanced Anti-Detection**: Added new verification server IPs (`67.18.60.145`, `169.62.35.21`) to firewall blocks.
+- **🌐 Updated Hosts Block**: Included more recent domains used by IDM for verification checks.
+- **⚠️ Smart Recommendations**: The UI now warns against traditional activation and recommends the "Freeze Trial" method.
+- **🚀 Version Update**: All components synchronized to v5.2.4 for consistent behavior.
 
 ## Features
 - **Fully Self-Contained** - Single portable executable, no installation needed
@@ -28,7 +28,7 @@ An enhanced open-source tool to activate, freeze trial, and manage Internet Down
 
 ### Running the Application
 
-1. Download `IDM Manager v5.2.2.x64.exe`
+1. Download `IDM Manager v5.2.4.x64.exe` (or run `IDM Manager v5.2.4.py`)
 2. Right-click → **Run as administrator**
 3. Select your desired option from the menu
 
@@ -81,9 +81,10 @@ Allows you to backup your current IDM settings and restore them later if needed.
 - Make sure IDM is installed
 - Download IDM from: https://www.internetdownloadmanager.com/download.html
 
-### If Detection Occurs
-1. Run **Option 3 (Reset)** to clear everything
-2. Then run **Option 1 (Freeze Trial)** to reapply
+### If "Fake Serial" Detection Occurs
+1. **RESET**: Run **Option 3 (Reset)** to clear all current activation data.
+2. **REINSTALL**: Reinstall IDM (optional but recommended for a clean state).
+3. **FREEZE**: Run **Option 1 (Freeze Trial)**. This is the **most robust** method for current IDM versions.
 
 ## Disclaimer
 I would like to make it clear that I am not the original creator of this script. 
