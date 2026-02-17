@@ -4,7 +4,7 @@ An enhanced open-source tool to activate, freeze trial, and manage Internet Down
 ![Capture](https://github.com/user-attachments/assets/fdaf3422-b3c5-4b72-82d8-6ab18ae7abfe)
 
 
-## What's New in Version 5.2.4
+## What's New in Version 5.3.0
 - **🛡️ Enhanced Anti-Detection**: Added new verification server IPs (`67.xx.xx.xx`, `169.xx.xx.xx21`) to firewall blocks.
 - **🌐 Updated Hosts Block**: Included more recent domains used by IDM for verification checks.
 - **⚠️ Smart Recommendations**: The UI now warns against traditional activation and recommends the "Freeze Trial" method.
