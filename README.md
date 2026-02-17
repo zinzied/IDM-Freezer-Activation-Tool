@@ -28,7 +28,7 @@ An enhanced open-source tool to activate, freeze trial, and manage Internet Down
 
 ### Running the Application
 
-1. Download `IDM Manager v5.2.4.x64.exe`
+1. Download `IDM Manager v5.3.0x64.exe`
 2. Right-click → **Run as administrator**
 3. Select your desired option from the menu
 
